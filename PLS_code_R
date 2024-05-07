@@ -1,0 +1,33 @@
+a<-read.csv("C:/Users/23934/Desktop/aaa.csv",header = TRUE,sep = ",") ##读取数据，数据为.CSV格式（excel另存为.csv）
+install.packages("pls") ## 安装pls包
+library(pls)  ## 载入pls包
+
+y<-a[1]  ## 将数据第一列作为因变量
+x<-a[2:8]  ##将2到8列作为自变量
+y<-scale(y)  ## 将y数据类型转化为数值型，scale是将数据做标准化，标准化数据直接转化为数值型
+x<-scale(x)  #3 将x数据类型转化为数值型
+pls1<-plsr(y~x,validation="LOO",jackknife=TRUE)  ##y对x做回归，验证方式为留一法
+summary(pls1)  ## 查看pls回归结果
+plot(RMSEP(pls1),main = '') ## 绘制误差图
+## 添加竖线
+abline(v = 4, # Y轴位置
+       lwd = 1,col = 'blue')
+
+# 添加图例  
+legend("topright", legend = c("CV", "adj_CV"), col = c("black", "red"), lty = c(1, 2), lwd = 2)
+
+
+
+pls1<-plsr(y~x,validation="LOO",ncomp=4,jackknife=TRUE)     
+summary(pls1)
+
+loading.weights(pls1)  ##系数
+
+c<-loading.weights(pls1)
+fix(c)   # 查看组成各主成分的自变量的具体的系数
+coef(pls1)  # 查看最后的标准化系数
+## 注意如何化为原系数？   反标准化系数=Beta*std(Y)/std(X)    标准化的截距项=0， 自己往回算一下
+##x     attr(,"scaled:center")表示均值    attr(,"scaled:scale")表示标准差
+## summary(y)    查看y的均值     sd(a$TE)标准差  5.10587
+
+## jack.test(pls1)   查看显著性
